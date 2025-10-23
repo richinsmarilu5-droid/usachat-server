@@ -1,38 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment - USAChat</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #4a00e0, #8e2de2, #5b42f3);
+      background-size: 200% 200%;
+      animation: bgMove 8s ease infinite;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .payment-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      width: 380px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 26px;
+      color: #fff;
+    }
+
+    p.subtitle {
+      color: #e0e0e0;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .address-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 12px;
+      border-radius: 8px;
+      word-break: break-all;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: #fff;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    input::placeholder {
+      color: #ddd;
+    }
+
+    .verify-btn {
+      margin-top: 18px;
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 95%;
+      transition: 0.3s;
+      box-shadow: 0 4px 12px rgba(78, 0, 224, 0.5);
+    }
+
+    .verify-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(78, 0, 224, 0.7);
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #eee;
+    }
+  </style>
 </head>
 <body>
-  <div class="payment-container">
-    <h2>Verify Payment (USDT - TRC20)</h2>
-    <p>Send <b>10 USDT</b> to this address:</p>
-    <p class="wallet">TM4psMQXmGizJ9FmLhhqhbTz9peZs1FJqK</p>
-    <input type="text" id="txid" placeholder="Enter TXID" />
-    <button onclick="verifyTx()">Verify Payment</button>
-    <p><a href="index.html">Back to Login</a></p>
+  <div class="payment-box">
+    <h2>💳 Complete Payment</h2>
+    <p class="subtitle">Send <strong>$10 (USDT - TRC20)</strong> to the address below</p>
+
+    <label style="font-size:14px;">TRC20 Wallet Address:</label>
+    <div class="address-box" id="trcAddress">TM4psMQXmGizJ9FmLhhqhbTz9peZs1FJqK</div>
+    <button class="copy-btn" onclick="copyAddress()">📋 Copy Address</button>
+
+    <input type="text" id="txidInput" placeholder="Enter your TXID after payment" />
+    <button class="verify-btn" onclick="verifyPayment()">✅ Verify Payment</button>
+
+    <p class="note">Once verified, you'll be redirected to your dashboard.</p>
   </div>
 
   <script>
-    async function verifyTx() {
-      const txid = document.getElementById("txid").value.trim();
-      if (!txid) return alert("Enter your TXID");
+    function copyAddress() {
+      const addr = document.getElementById("trcAddress").textContent;
+      navigator.clipboard.writeText(addr);
+      alert("✅ Wallet address copied!");
+    }
 
-      const res = await fetch("https://usachat-server-hx17.onrender.com/api/verify-txid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ txid }),
-      });
+    async function verifyPayment() {
+      const txid = document.getElementById("txidInput").value.trim();
+      const user = sessionStorage.getItem("loggedUser");
 
-      const data = await res.json();
-      if (data.success) {
-        alert("✅ Payment Verified!");
-        window.location.href = "dashboard.html";
-      } else {
-        alert("❌ Invalid or insufficient payment");
+      if (!user) {
+        alert("Please login or create an account first!");
+        window.location.href = "index.html";
+        return;
+      }
+
+      if (!txid) {
+        alert("Please enter your transaction ID (TXID).");
+        return;
+      }
+
+      try {
+        const res = await fetch("https://usachat-server-hx17.onrender.com/api/verify-txid", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ txid }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          sessionStorage.setItem("paidUser", user);
+          sessionStorage.setItem("txid_" + user, txid);
+          alert("✅ Payment Verified Successfully!");
+          window.location.href = "dashboard.html";
+        } else {
+          alert("❌ " + data.message);
+        }
+      } catch (err) {
+        alert("⚠️ Server Error: " + err.message);
+        console.error(err);
       }
     }
   </script>
