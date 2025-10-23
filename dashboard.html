@@ -3,55 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - USAChat</title>
+  <title>USAChat Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="dashboard">
-    <aside class="sidebar">
-      <h2>📱 USAChat</h2>
-      <button onclick="logout()">Logout</button>
-      <h3>Your Numbers</h3>
-      <ul id="numberList"></ul>
-      <button onclick="getNumbers()">Get New Number</button>
-    </aside>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="brand">
+        <h2>📞 USAChat</h2>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      </div>
 
-    <main class="chat-area">
-      <h2>Conversations</h2>
-      <button onclick="newMessage()">+ New Message</button>
-      <div id="messages"></div>
-    </main>
+      <h4>Your Phone Numbers</h4>
+      <div id="phoneList" class="phone-list"></div>
+      <button class="new-number-btn" onclick="getNewNumber()">+ Get New Number</button>
+    </div>
+
+    <!-- Conversations -->
+    <div class="conversations">
+      <div class="top-bar">
+        <h3>Conversations</h3>
+        <button class="new-msg-btn" onclick="openNewMessage()">+ New Message</button>
+      </div>
+      <input type="text" placeholder="Search by phone number..." id="searchBox" />
+      <div id="conversationList" class="conversation-list"></div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <div id="chatHeader" class="chat-header">Select or start a conversation</div>
+
+      <!-- New Message Area -->
+      <div id="newMessageArea" class="new-message-area hidden">
+        <div class="new-msg-box">
+          <h4>📩 New Message</h4>
+          <p>Enter recipient number:</p>
+          <input type="text" id="recipientInput" placeholder="+1 555-123-4567" />
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <div id="chatMessages" class="chat-messages"></div>
+
+      <div class="chat-input">
+        <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+        <button class="icon-btn" onclick="document.getElementById('imageInput').click()">📷</button>
+
+        <input type="file" id="fileInput" hidden onchange="sendFile(event)">
+        <input type="file" id="imageInput" accept="image/*" hidden onchange="sendImage(event)">
+
+        <input type="text" id="chatText" placeholder="Type a message...">
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    async function getNumbers() {
-      const res = await fetch("https://usachat-server-hx17.onrender.com/api/get-numbers");
+    const API_BASE = "https://usachat-server-hx17.onrender.com";
+
+    async function getNewNumber() {
+      const res = await fetch(`${API_BASE}/api/get-numbers`);
       const data = await res.json();
-      if (data.success) {
-        const list = document.getElementById("numberList");
-        list.innerHTML = data.numbers.map(n => `<li>${n.phoneNumber}</li>`).join("");
-      } else {
-        alert("Failed to load numbers");
-      }
+      console.log(data);
     }
 
-    async function newMessage() {
-      const to = prompt("Enter phone number:");
-      const msg = prompt("Enter message:");
-      if (!to || !msg) return;
-
-      const res = await fetch("https://usachat-server-hx17.onrender.com/api/send-sms", {
+    async function sendMessage() {
+      const text = document.getElementById("chatText").value;
+      const to = prompt("Enter receiver number:");
+      if (!to || !text) return;
+      const res = await fetch(`${API_BASE}/api/send-sms`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to, message: msg })
+        body: JSON.stringify({ to, message: text }),
       });
-
       const data = await res.json();
-      alert(data.success ? "📩 Sent!" : "❌ Failed: " + data.error);
+      alert(data.success ? "✅ Message sent!" : "❌ Failed: " + data.error);
     }
 
     function logout() {
-      localStorage.clear();
+      alert("Logged out!");
       window.location.href = "index.html";
     }
   </script>
