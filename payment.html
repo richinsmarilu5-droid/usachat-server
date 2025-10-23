@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment - USAChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="payment-container">
+    <h2>Verify Payment (USDT - TRC20)</h2>
+    <p>Send <b>10 USDT</b> to this address:</p>
+    <p class="wallet">TM4psMQXmGizJ9FmLhhqhbTz9peZs1FJqK</p>
+    <input type="text" id="txid" placeholder="Enter TXID" />
+    <button onclick="verifyTx()">Verify Payment</button>
+    <p><a href="index.html">Back to Login</a></p>
+  </div>
+
+  <script>
+    async function verifyTx() {
+      const txid = document.getElementById("txid").value.trim();
+      if (!txid) return alert("Enter your TXID");
+
+      const res = await fetch("https://usachat-server-hx17.onrender.com/api/verify-txid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ txid }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("✅ Payment Verified!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("❌ Invalid or insufficient payment");
+      }
+    }
+  </script>
+</body>
+</html>
