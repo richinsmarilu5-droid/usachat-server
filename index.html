@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - USAChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to USAChat</h2>
+    <input type="text" id="username" placeholder="Enter Username" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <a href="create.html">Create one</a></p>
+  </div>
+
+  <script>
+    async function login() {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      if (!user || !pass) return alert('Please fill all fields');
+
+      // ✅ Backend Login API
+      const res = await fetch("https://usachat-server-hx17.onrender.com/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("user", user);
+        window.location.href = "dashboard.html";
+      } else {
+        alert(data.message || "Login failed");
+      }
+    }
+  </script>
+</body>
+</html>
