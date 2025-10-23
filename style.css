@@ -1,0 +1,58 @@
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f8f9fb;
+  color: #333;
+}
+
+button {
+  background: #3a6ef5;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button:hover {
+  background: #2e5dd9;
+}
+
+/* Login & Create */
+.login-container, .create-container, .payment-container {
+  width: 350px;
+  margin: 120px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Dashboard */
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+.sidebar {
+  width: 260px;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+.chat-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
