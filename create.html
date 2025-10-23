@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account - USAChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="create-container">
+    <h2>Create New Account</h2>
+    <input type="text" id="newUser" placeholder="Username" />
+    <input type="password" id="newPass" placeholder="Password" />
+    <button onclick="register()">Create Account</button>
+    <p><a href="index.html">Back to Login</a></p>
+  </div>
+
+  <script>
+    async function register() {
+      const username = document.getElementById("newUser").value.trim();
+      const password = document.getElementById("newPass").value.trim();
+      if (!username || !password) return alert("Please fill all fields");
+
+      const res = await fetch("https://usachat-server-hx17.onrender.com/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Account created successfully!");
+        window.location.href = "payment.html";
+      } else {
+        alert(data.message || "Registration failed");
+      }
+    }
+  </script>
+</body>
+</html>
