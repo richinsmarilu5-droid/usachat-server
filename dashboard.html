@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - USAChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <h2>📱 USAChat</h2>
+      <button onclick="logout()">Logout</button>
+      <h3>Your Numbers</h3>
+      <ul id="numberList"></ul>
+      <button onclick="getNumbers()">Get New Number</button>
+    </aside>
+
+    <main class="chat-area">
+      <h2>Conversations</h2>
+      <button onclick="newMessage()">+ New Message</button>
+      <div id="messages"></div>
+    </main>
+  </div>
+
+  <script>
+    async function getNumbers() {
+      const res = await fetch("https://usachat-server-hx17.onrender.com/api/get-numbers");
+      const data = await res.json();
+      if (data.success) {
+        const list = document.getElementById("numberList");
+        list.innerHTML = data.numbers.map(n => `<li>${n.phoneNumber}</li>`).join("");
+      } else {
+        alert("Failed to load numbers");
+      }
+    }
+
+    async function newMessage() {
+      const to = prompt("Enter phone number:");
+      const msg = prompt("Enter message:");
+      if (!to || !msg) return;
+
+      const res = await fetch("https://usachat-server-hx17.onrender.com/api/send-sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to, message: msg })
+      });
+
+      const data = await res.json();
+      alert(data.success ? "📩 Sent!" : "❌ Failed: " + data.error);
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
